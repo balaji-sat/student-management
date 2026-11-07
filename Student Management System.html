@@ -1,0 +1,1151 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Student Management System</title>
+
+<style>
+    :root {
+        --bg: #f4f6fb;
+        --surface: #ffffff;
+        --surface-2: #f8f9fd;
+        --border: #e3e7f0;
+        --text: #1e2a44;
+        --muted: #6b7792;
+        --primary: #2f5fd0;
+        --primary-hover: #254db0;
+        --primary-soft: #e8eefc;
+        --danger: #d93a4a;
+        --danger-soft: #fde8ea;
+        --success: #198754;
+        --success-soft: #dff3e8;
+        --warning: #b7791f;
+        --warning-soft: #fdf1d8;
+        --neutral-soft: #eceff5;
+        --shadow: 0 1px 3px rgba(20, 30, 60, .08), 0 6px 20px rgba(20, 30, 60, .06);
+        --radius: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg: #0f1424;
+        --surface: #171d33;
+        --surface-2: #1c2340;
+        --border: #2a3354;
+        --text: #e6e9f5;
+        --muted: #98a3c2;
+        --primary: #6c8cf5;
+        --primary-hover: #8aa3f7;
+        --primary-soft: #232d57;
+        --danger: #ff6b7a;
+        --danger-soft: #3a1f29;
+        --success: #4cc38a;
+        --success-soft: #17342a;
+        --warning: #f0b95a;
+        --warning-soft: #3a2f17;
+        --neutral-soft: #242c4a;
+        --shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+        color-scheme: dark;
+    }
+}
+
+    :root[data-theme="dark"] {
+        --bg: #0f1424;
+        --surface: #171d33;
+        --surface-2: #1c2340;
+        --border: #2a3354;
+        --text: #e6e9f5;
+        --muted: #98a3c2;
+        --primary: #6c8cf5;
+        --primary-hover: #8aa3f7;
+        --primary-soft: #232d57;
+        --danger: #ff6b7a;
+        --danger-soft: #3a1f29;
+        --success: #4cc38a;
+        --success-soft: #17342a;
+        --warning: #f0b95a;
+        --warning-soft: #3a2f17;
+        --neutral-soft: #242c4a;
+        --shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+        color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        transition: background .2s, color .2s;
+    }
+
+    button, input, select { font: inherit; color: inherit; }
+
+    .sr-only {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip: rect(0 0 0 0); white-space: nowrap;
+    }
+
+    /* ---------- Layout ---------- */
+    .topbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    }
+    .topbar-inner {
+        max-width: 1200px; margin: 0 auto; padding-block: 14px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+        width: 40px; height: 40px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary), #7b5cf0);
+        display: grid; place-items: center; color: #fff; font-weight: 700;
+    }
+    .brand h1 { font-size: 18px; margin: 0; }
+    .brand p { margin: 0; font-size: 12px; color: var(--muted); }
+
+    main {
+        max-width: 1200px; margin: 0 auto; padding-block: 24px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+    body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        padding: 9px 16px; border-radius: 8px; border: 1px solid transparent;
+        cursor: pointer; font-weight: 600; font-size: 14px;
+        transition: background .15s, border-color .15s, transform .05s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible, .icon-btn:focus-visible, input:focus-visible, select:focus-visible,
+    th.sortable:focus-visible, .page-btn:focus-visible {
+        outline: 2px solid var(--primary); outline-offset: 2px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--surface-2); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { filter: brightness(.92); }
+    .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+    .icon-btn {
+        width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+        background: var(--surface); cursor: pointer; display: inline-grid; place-items: center;
+    }
+    .icon-btn:hover { background: var(--surface-2); }
+    .icon-btn.danger:hover { background: var(--danger-soft); border-color: var(--danger); }
+    .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ---------- Stats ---------- */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    }
+    .stat .label { font-size: 13px; color: var(--muted); }
+    .stat .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+
+    /* ---------- Card / toolbar ---------- */
+    .card {
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .toolbar {
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        padding: 16px; border-bottom: 1px solid var(--border);
+    }
+    .search-wrap { position: relative; flex: 1 1 240px; min-width: 200px; }
+    .search-wrap svg {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2;
+    }
+    .toolbar input[type="search"] { padding-left: 36px; width: 100%; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"],
+    input[type="search"], select {
+        padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+        background: var(--surface); width: 100%;
+    }
+    .toolbar select { width: auto; }
+    .toolbar-spacer { flex: 1; }
+
+    .bulk-bar {
+        display: none; align-items: center; gap: 12px; padding: 10px 16px;
+        background: var(--primary-soft); border-bottom: 1px solid var(--border); font-size: 14px;
+    }
+    .bulk-bar.show { display: flex; }
+
+    /* ---------- Table ---------- */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 820px; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+    th {
+        background: var(--surface-2); color: var(--muted); font-size: 12px;
+        text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text); }
+    tbody tr:hover { background: var(--surface-2); }
+    tbody tr.selected { background: var(--primary-soft); }
+    td.actions { white-space: nowrap; text-align: right; }
+    th.actions { text-align: right; }
+    input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+    .student-cell { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+        width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+        color: #fff; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .student-name { font-weight: 600; }
+    .muted { color: var(--muted); }
+
+    .badge {
+        display: inline-block; padding: 3px 10px; border-radius: 999px;
+        font-size: 12px; font-weight: 600;
+    }
+    .badge.active { background: var(--success-soft); color: var(--success); }
+    .badge.inactive { background: var(--warning-soft); color: var(--warning); }
+    .badge.graduated { background: var(--primary-soft); color: var(--primary); }
+
+    .empty-state { text-align: center; padding: 56px 16px; color: var(--muted); }
+    .empty-state h3 { color: var(--text); margin: 8px 0 4px; }
+
+    /* ---------- Pagination ---------- */
+    .pagination {
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+        gap: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted);
+    }
+    .pager { display: flex; gap: 4px; align-items: center; }
+    .page-btn {
+        min-width: 34px; height: 34px; padding: 0 8px; border-radius: 8px;
+        border: 1px solid var(--border); background: var(--surface); cursor: pointer;
+    }
+    .page-btn:hover:not([disabled]) { background: var(--surface-2); }
+    .page-btn.current { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-btn[disabled] { opacity: .45; cursor: not-allowed; }
+    .page-size { display: flex; align-items: center; gap: 8px; }
+    .page-size select { width: auto; padding: 6px 8px; }
+
+    /* ---------- Modal ---------- */
+    .overlay {
+        position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(10, 15, 35, .55);
+        display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50;
+    }
+    .overlay.show { display: flex; }
+    .modal {
+        background: var(--surface); border-radius: var(--radius); width: 100%; max-width: 520px;
+        max-height: 92vh; max-height: 92dvh;
+        display: flex; flex-direction: column; overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+        animation: pop .15s ease-out;
+    }
+    /* The form wraps header, body and footer: keep it a column so only the body scrolls */
+    .modal > form { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+    @keyframes pop { from { transform: scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+    .modal-header {
+        display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+        padding: 18px 22px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 { margin: 0; font-size: 18px; }
+    .modal-body { padding: 20px 22px; overflow-y: auto; flex: 1 1 auto; min-height: 0; }
+    .modal-footer {
+        display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;
+        padding: 16px 22px; border-top: 1px solid var(--border);
+    }
+
+    /* ---------- Storage warning ---------- */
+    .storage-warning {
+        background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning);
+        border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; font-size: 14px;
+    }
+    .storage-warning[hidden] { display: none; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 13px; font-weight: 600; }
+    .field .req { color: var(--danger); }
+    .field input.invalid, .field select.invalid { border-color: var(--danger); }
+    .field .error { color: var(--danger); font-size: 12px; min-height: 16px; }
+
+    /* ---------- Toasts ---------- */
+    .toasts { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); right: max(20px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+    .toast {
+        background: var(--text); color: var(--bg); padding: 12px 16px; border-radius: 10px;
+        box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px;
+        font-size: 14px; max-width: 360px; animation: slide .2s ease-out;
+    }
+    .toast.error { background: var(--danger); color: #fff; }
+    .toast.success { background: var(--success); color: #fff; }
+    .toast button {
+        background: transparent; border: 1px solid currentColor; border-radius: 6px;
+        padding: 3px 10px; cursor: pointer; font-weight: 600;
+    }
+    @keyframes slide { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) {
+        main { padding-block: 14px; }
+        .topbar-inner { padding-block: 12px; }
+        .brand p { display: none; }
+        .form-grid { grid-template-columns: 1fr; }
+        .stat .value { font-size: 22px; }
+    }
+
+    @media print {
+        .topbar, .toolbar, .bulk-bar, .pagination, .toasts, th.actions, td.actions,
+        th.check, td.check, .stats { display: none !important; }
+        body { background: #fff; color: #000; }
+        .card { box-shadow: none; border: none; }
+        table { min-width: 0; }
+    }
+</style>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <div class="brand-logo" aria-hidden="true">SM</div>
+            <div>
+                <h1>Student Management System</h1>
+                <p>Manage enrolments, courses and records</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+
+    <div class="storage-warning" id="storageWarning" role="alert" hidden>
+        <strong>Records won't be saved.</strong> This browser is blocking local storage (often a private window), so students
+        you add will disappear when you refresh. Open the link in a normal window to keep your data.
+    </div>
+
+    <!-- Dashboard stats -->
+    <section class="stats" aria-label="Summary">
+        <div class="stat"><div class="label">Total students</div><div class="value" id="statTotal">0</div></div>
+        <div class="stat"><div class="label">Active</div><div class="value" id="statActive">0</div></div>
+        <div class="stat"><div class="label">Courses</div><div class="value" id="statCourses">0</div></div>
+        <div class="stat"><div class="label">Added this month</div><div class="value" id="statMonth">0</div></div>
+    </section>
+
+    <section class="card">
+
+        <div class="toolbar">
+            <div class="search-wrap">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <label for="search" class="sr-only">Search students</label>
+                <input type="search" id="search" placeholder="Search name, email, phone or course  ( / )" autocomplete="off">
+            </div>
+
+            <label for="courseFilter" class="sr-only">Filter by course</label>
+            <select id="courseFilter"><option value="">All courses</option></select>
+
+            <label for="statusFilter" class="sr-only">Filter by status</label>
+            <select id="statusFilter">
+                <option value="">All statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Graduated">Graduated</option>
+            </select>
+
+            <div class="toolbar-spacer"></div>
+
+            <button class="btn btn-secondary" id="importBtn" type="button">Import CSV</button>
+            <input type="file" id="importFile" accept=".csv,text/csv" hidden>
+            <button class="btn btn-secondary" id="exportBtn" type="button">Copy CSV</button>
+            <button class="btn btn-primary" id="addBtn" type="button">+ Add Student</button>
+        </div>
+
+        <div class="bulk-bar" id="bulkBar">
+            <span id="bulkCount">0 selected</span>
+            <button class="btn btn-danger" id="bulkDeleteBtn" type="button">Delete selected</button>
+            <button class="btn btn-secondary" id="bulkClearBtn" type="button">Clear selection</button>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="check"><input type="checkbox" id="selectAll" aria-label="Select all on this page"></th>
+                        <th class="sortable" data-key="name" tabindex="0" aria-sort="none">Student <span data-arrow="name"></span></th>
+                        <th class="sortable" data-key="email" tabindex="0" aria-sort="none">Email <span data-arrow="email"></span></th>
+                        <th>Phone</th>
+                        <th class="sortable" data-key="course" tabindex="0" aria-sort="none">Course <span data-arrow="course"></span></th>
+                        <th class="sortable" data-key="status" tabindex="0" aria-sort="none">Status <span data-arrow="status"></span></th>
+                        <th class="sortable" data-key="enrolled" tabindex="0" aria-sort="none">Enrolled <span data-arrow="enrolled"></span></th>
+                        <th class="actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentList"></tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <div id="rangeInfo"></div>
+            <div class="page-size">
+                <label for="pageSize">Rows per page</label>
+                <select id="pageSize">
+                    <option>5</option><option selected>10</option><option>25</option><option>50</option>
+                </select>
+            </div>
+            <div class="pager" id="pager"></div>
+        </div>
+
+    </section>
+</main>
+
+<!-- Add / Edit modal -->
+<div class="overlay" id="formOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+        <form id="studentForm" novalidate>
+            <div class="modal-header">
+                <h2 id="formTitle">Add Student</h2>
+                <button type="button" class="icon-btn" data-close="formOverlay" aria-label="Close">
+                    <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="name">Full name <span class="req">*</span></label>
+                        <input type="text" id="name" maxlength="80" autocomplete="off">
+                        <div class="error" id="nameError"></div>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email <span class="req">*</span></label>
+                        <input type="email" id="email" maxlength="120" autocomplete="off">
+                        <div class="error" id="emailError"></div>
+                    </div>
+                    <div class="field">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" maxlength="20" autocomplete="off" placeholder="+91 98765 43210">
+                        <div class="error" id="phoneError"></div>
+                    </div>
+                    <div class="field">
+                        <label for="course">Course <span class="req">*</span></label>
+                        <input type="text" id="course" list="courseList" maxlength="80" autocomplete="off">
+                        <datalist id="courseList"></datalist>
+                        <div class="error" id="courseError"></div>
+                    </div>
+                    <div class="field">
+                        <label for="status">Status</label>
+                        <select id="status">
+                            <option>Active</option><option>Inactive</option><option>Graduated</option>
+                        </select>
+                        <div class="error"></div>
+                    </div>
+                    <div class="field">
+                        <label for="enrolled">Enrolment date</label>
+                        <input type="date" id="enrolled">
+                        <div class="error" id="enrolledError"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-close="formOverlay">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveBtn">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="overlay" id="confirmOverlay">
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText" style="max-width:420px">
+        <div class="modal-header">
+            <h2 id="confirmTitle">Confirm deletion</h2>
+        </div>
+        <div class="modal-body"><p id="confirmText" style="margin:0"></p></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="confirmCancel">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirmOk">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(function () {
+    "use strict";
+
+    // =========================================================
+    // Data layer
+    // =========================================================
+    const STORAGE_KEY = "students";
+    const THEME_KEY = "sms-theme";
+
+    function uid() {
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "id-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function today() {
+        const d = new Date();
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+
+    // Derive a date from an old timestamp id without ever throwing on bad values
+    function dateFromId(id) {
+        const t = Number(id);
+        const d = new Date(t);
+        return id && isFinite(t) && !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : today();
+    }
+
+    // Upgrade records saved by the earlier version of the app
+    function normalise(s) {
+        return {
+            id: String(s.id || uid()),
+            name: String(s.name || "").trim(),
+            email: String(s.email || "").trim(),
+            phone: String(s.phone || "").trim(),
+            course: String(s.course || "").trim(),
+            status: ["Active", "Inactive", "Graduated"].indexOf(s.status) > -1 ? s.status : "Active",
+            enrolled: s.enrolled || dateFromId(s.id),
+            createdAt: s.createdAt || Date.now()
+        };
+    }
+
+    function load() {
+        try {
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (!Array.isArray(data)) return [];
+            // Ignore junk entries (null, numbers, records without a name/email) instead of showing blank rows
+            return data.filter(function (s) {
+                return s && typeof s === "object" &&
+                    typeof s.name === "string" && s.name.trim() &&
+                    typeof s.email === "string" && s.email.trim();
+            }).map(normalise);
+        } catch (e) { return []; }
+    }
+
+    let storageWarned = false;
+    function save() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+        } catch (e) {
+            if (!storageWarned) { toast("Could not save: browser storage is unavailable.", "error"); storageWarned = true; }
+        }
+    }
+
+    // =========================================================
+    // State
+    // =========================================================
+    let students = load();
+    let editId = null;
+    let sortKey = "name";
+    let sortAsc = true;
+    let page = 1;
+    let pageSize = 10;
+    const selected = new Set();
+    let lastFocus = null;
+
+    // =========================================================
+    // DOM
+    // =========================================================
+    const $ = function (id) { return document.getElementById(id); };
+    const list = $("studentList");
+
+    // =========================================================
+    // Helpers
+    // =========================================================
+    function esc(text) {
+        return String(text).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+    }
+
+    const AVATAR_COLORS = ["#2f5fd0", "#7b5cf0", "#0e9f6e", "#d9731a", "#c2377a", "#0b8aa6", "#8a5a2b", "#5b6b8c"];
+    function avatarColor(name) {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+        return AVATAR_COLORS[h % AVATAR_COLORS.length];
+    }
+    function initials(name) {
+        const parts = name.split(/\s+/).filter(Boolean);
+        return ((parts[0] || "?")[0] + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+    }
+
+    function formatDate(iso) {
+        if (!iso) return "—";
+        const d = new Date(iso + "T00:00:00");
+        return isNaN(d) ? "—" : d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function emailTaken(email, ignoreId) {
+        const e = email.toLowerCase();
+        return students.some(function (s) { return s.email.toLowerCase() === e && s.id !== ignoreId; });
+    }
+
+    // =========================================================
+    // Toasts
+    // =========================================================
+    function toast(message, type, action) {
+        const el = document.createElement("div");
+        el.className = "toast " + (type || "");
+        const span = document.createElement("span");
+        span.textContent = message;
+        el.appendChild(span);
+
+        let timer;
+        function remove() { clearTimeout(timer); el.remove(); }
+
+        if (action) {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = action.label;
+            b.addEventListener("click", function () { action.run(); remove(); });
+            el.appendChild(b);
+        }
+        $("toasts").appendChild(el);
+        timer = setTimeout(remove, action ? 7000 : 3200);
+    }
+
+    // =========================================================
+    // Modals
+    // =========================================================
+    function openOverlay(id, focusEl) {
+        lastFocus = document.activeElement;
+        $(id).classList.add("show");
+        // Focus immediately: a delayed focus() could steal focus from a field the user already started typing in
+        if (focusEl) focusEl.focus();
+    }
+    function closeOverlay(id) {
+        $(id).classList.remove("show");
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    document.querySelectorAll("[data-close]").forEach(function (b) {
+        b.addEventListener("click", function () { closeOverlay(b.dataset.close); });
+    });
+    document.querySelectorAll(".overlay").forEach(function (o) {
+        o.addEventListener("mousedown", function (e) {
+            if (e.target === o && o.id === "formOverlay") closeOverlay(o.id);
+        });
+    });
+
+    function confirmDialog(text, okLabel) {
+        return new Promise(function (resolve) {
+            $("confirmText").textContent = text;
+            $("confirmOk").textContent = okLabel || "Delete";
+            openOverlay("confirmOverlay", $("confirmCancel"));
+
+            function done(result) {
+                $("confirmOk").removeEventListener("click", onOk);
+                $("confirmCancel").removeEventListener("click", onCancel);
+                closeOverlay("confirmOverlay");
+                resolve(result);
+            }
+            function onOk() { done(true); }
+            function onCancel() { done(false); }
+            $("confirmOk").addEventListener("click", onOk);
+            $("confirmCancel").addEventListener("click", onCancel);
+        });
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            if ($("confirmOverlay").classList.contains("show")) $("confirmCancel").click();
+            else if ($("formOverlay").classList.contains("show")) closeOverlay("formOverlay");
+        }
+        const tag = (document.activeElement && document.activeElement.tagName) || "";
+        if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(tag) && !document.querySelector(".overlay.show")) {
+            e.preventDefault();
+            $("search").focus();
+        }
+    });
+
+    // =========================================================
+    // Form validation
+    // =========================================================
+    const fields = ["name", "email", "phone", "course", "enrolled"];
+
+    function setError(field, message) {
+        const input = $(field);
+        $(field + "Error").textContent = message || "";
+        input.classList.toggle("invalid", !!message);
+        input.setAttribute("aria-invalid", message ? "true" : "false");
+    }
+
+    function validate() {
+        const name = $("name").value.trim();
+        const email = $("email").value.trim();
+        const phone = $("phone").value.trim();
+        const course = $("course").value.trim();
+        const enrolled = $("enrolled").value;
+        let ok = true;
+
+        function fail(field, msg) { setError(field, msg); ok = false; }
+        fields.forEach(function (f) { setError(f, ""); });
+
+        if (name.length < 2) fail("name", "Enter the student's full name (min 2 characters).");
+
+        if (!email) fail("email", "Email is required.");
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) fail("email", "Enter a valid email address.");
+        else if (emailTaken(email, editId)) fail("email", "A student with this email already exists.");
+
+        // Optional. Accept common formats (spaces, dashes, dots, brackets, leading +); need 7-15 digits.
+        if (phone) {
+            const digits = phone.replace(/\D/g, "");
+            if (!/^[+()\d\s.\-]+$/.test(phone) || digits.length < 7 || digits.length > 15) {
+                fail("phone", "Use 7–15 digits (e.g. +91 98765 43210), or leave it blank.");
+            }
+        }
+
+        if (!course) fail("course", "Course is required.");
+
+        if (enrolled && enrolled > today()) fail("enrolled", "Enrolment date cannot be in the future.");
+
+        if (!ok) {
+            const firstBad = fields.find(function (f) { return $(f).classList.contains("invalid"); });
+            if (firstBad) $(firstBad).focus();
+            toast("Please fix the highlighted fields.", "error");
+        }
+        return ok;
+    }
+
+    fields.forEach(function (f) {
+        $(f).addEventListener("input", function () {
+            if ($(f).classList.contains("invalid")) setError(f, "");
+        });
+    });
+
+    // =========================================================
+    // CREATE / UPDATE
+    // =========================================================
+    function openForm(student) {
+        $("studentForm").reset();
+        fields.forEach(function (f) { setError(f, ""); });
+        $("enrolled").max = today();
+
+        if (student) {
+            editId = student.id;
+            $("formTitle").textContent = "Edit Student";
+            $("saveBtn").textContent = "Save Changes";
+            $("name").value = student.name;
+            $("email").value = student.email;
+            $("phone").value = student.phone;
+            $("course").value = student.course;
+            $("status").value = student.status;
+            $("enrolled").value = student.enrolled;
+        } else {
+            editId = null;
+            $("formTitle").textContent = "Add Student";
+            $("saveBtn").textContent = "Add Student";
+            $("status").value = "Active";
+            $("enrolled").value = today();
+        }
+        openOverlay("formOverlay", $("name"));
+    }
+
+    // Saving is wired to the button click and the Enter key, NOT the form "submit" event:
+    // sandboxed preview panes without the allow-forms permission block native submission,
+    // which made the Add/Save button silently do nothing there.
+    function saveStudent() {
+        if (!validate()) return;
+
+        const data = {
+            name: $("name").value.trim(),
+            email: $("email").value.trim(),
+            phone: $("phone").value.trim(),
+            course: $("course").value.trim(),
+            status: $("status").value,
+            enrolled: $("enrolled").value || today()
+        };
+
+        if (editId === null) {
+            students.push(normalise(Object.assign({ id: uid(), createdAt: Date.now() }, data)));
+            toast("Student added.", "success");
+            page = 1;
+        } else {
+            const s = students.find(function (x) { return x.id === editId; });
+            if (s) Object.assign(s, data);
+            toast("Student updated.", "success");
+        }
+
+        save();
+        closeOverlay("formOverlay");
+        render();
+    }
+
+    $("saveBtn").addEventListener("click", saveStudent);
+    $("studentForm").addEventListener("submit", function (e) { e.preventDefault(); });
+    $("studentForm").addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.isComposing && e.target.tagName === "INPUT") {
+            e.preventDefault();
+            saveStudent();
+        }
+    });
+
+    $("addBtn").addEventListener("click", function () { openForm(null); });
+
+    // =========================================================
+    // DELETE (with undo) and bulk delete
+    // =========================================================
+    function removeStudents(ids) {
+        const removed = students.filter(function (s) { return ids.indexOf(s.id) > -1; });
+        const positions = removed.map(function (r) { return students.indexOf(r); });
+
+        students = students.filter(function (s) { return ids.indexOf(s.id) === -1; });
+        ids.forEach(function (id) { selected.delete(id); });
+        save();
+        render();
+
+        toast(removed.length === 1 ? "Student deleted." : removed.length + " students deleted.", "", {
+            label: "Undo",
+            run: function () {
+                removed.forEach(function (r, i) {
+                    students.splice(Math.min(positions[i], students.length), 0, r);
+                });
+                save();
+                render();
+                toast("Deletion undone.", "success");
+            }
+        });
+    }
+
+    // =========================================================
+    // Filtering, sorting, pagination
+    // =========================================================
+    function getFiltered() {
+        const q = $("search").value.trim().toLowerCase();
+        const course = $("courseFilter").value;
+        const status = $("statusFilter").value;
+
+        let rows = students.filter(function (s) {
+            if (course && s.course !== course) return false;
+            if (status && s.status !== status) return false;
+            if (!q) return true;
+            return (s.name + " " + s.email + " " + s.phone + " " + s.course).toLowerCase().indexOf(q) > -1;
+        });
+
+        rows.sort(function (a, b) {
+            const r = String(a[sortKey]).localeCompare(String(b[sortKey]), undefined, { sensitivity: "base", numeric: true });
+            return sortAsc ? r : -r;
+        });
+        return rows;
+    }
+
+    function refreshCourseFilter() {
+        const courses = Array.from(new Set(students.map(function (s) { return s.course; })))
+            .sort(function (a, b) { return a.localeCompare(b); });
+        const current = $("courseFilter").value;
+
+        $("courseFilter").innerHTML = '<option value="">All courses</option>' +
+            courses.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + "</option>"; }).join("");
+        $("courseFilter").value = courses.indexOf(current) > -1 ? current : "";
+
+        $("courseList").innerHTML = courses.map(function (c) { return '<option value="' + esc(c) + '">'; }).join("");
+    }
+
+    function renderStats() {
+        const now = new Date();
+        const monthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0");
+        $("statTotal").textContent = students.length;
+        $("statActive").textContent = students.filter(function (s) { return s.status === "Active"; }).length;
+        $("statCourses").textContent = new Set(students.map(function (s) { return s.course.toLowerCase(); })).size;
+        $("statMonth").textContent = students.filter(function (s) { return (s.enrolled || "").slice(0, 7) === monthKey; }).length;
+    }
+
+    // =========================================================
+    // Render
+    // =========================================================
+    function render() {
+        refreshCourseFilter();
+        renderStats();
+
+        const rows = getFiltered();
+        const total = rows.length;
+        const pages = Math.max(1, Math.ceil(total / pageSize));
+        if (page > pages) page = pages;
+        const start = (page - 1) * pageSize;
+        const pageRows = rows.slice(start, start + pageSize);
+
+        // sort indicators
+        document.querySelectorAll("th.sortable").forEach(function (th) {
+            const active = th.dataset.key === sortKey;
+            th.setAttribute("aria-sort", active ? (sortAsc ? "ascending" : "descending") : "none");
+            th.querySelector("[data-arrow]").textContent = active ? (sortAsc ? "▲" : "▼") : "";
+        });
+
+        if (total === 0) {
+            const none = students.length === 0;
+            list.innerHTML = '<tr><td colspan="8"><div class="empty-state">' +
+                "<h3>" + (none ? "No students yet" : "No matching students") + "</h3>" +
+                "<p>" + (none ? "Click “Add Student” to create the first record." : "Try changing your search or filters.") + "</p>" +
+                "</div></td></tr>";
+        } else {
+            list.innerHTML = pageRows.map(function (s) {
+                const checked = selected.has(s.id);
+                return '<tr class="' + (checked ? "selected" : "") + '">' +
+                    '<td class="check"><input type="checkbox" data-select="' + esc(s.id) + '" ' + (checked ? "checked" : "") +
+                        ' aria-label="Select ' + esc(s.name) + '"></td>' +
+                    '<td><div class="student-cell"><div class="avatar" style="background:' + avatarColor(s.name) + '">' +
+                        esc(initials(s.name)) + '</div><div class="student-name">' + esc(s.name) + "</div></div></td>" +
+                    "<td>" + esc(s.email) + "</td>" +
+                    '<td class="muted">' + (s.phone ? esc(s.phone) : "—") + "</td>" +
+                    "<td>" + esc(s.course) + "</td>" +
+                    '<td><span class="badge ' + s.status.toLowerCase() + '">' + esc(s.status) + "</span></td>" +
+                    '<td class="muted">' + esc(formatDate(s.enrolled)) + "</td>" +
+                    '<td class="actions">' +
+                        '<button class="icon-btn" type="button" data-edit="' + esc(s.id) + '" aria-label="Edit ' + esc(s.name) + '" title="Edit">' +
+                            '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button> ' +
+                        '<button class="icon-btn danger" type="button" data-delete="' + esc(s.id) + '" aria-label="Delete ' + esc(s.name) + '" title="Delete">' +
+                            '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg></button>' +
+                    "</td></tr>";
+            }).join("");
+        }
+
+        // select-all state (current page)
+        const allOnPage = pageRows.length > 0 && pageRows.every(function (s) { return selected.has(s.id); });
+        $("selectAll").checked = allOnPage;
+        $("selectAll").indeterminate = !allOnPage && pageRows.some(function (s) { return selected.has(s.id); });
+
+        // bulk bar
+        $("bulkBar").classList.toggle("show", selected.size > 0);
+        $("bulkCount").textContent = selected.size + " selected";
+
+        // pagination
+        $("rangeInfo").textContent = total === 0 ? "0 results" :
+            "Showing " + (start + 1) + "–" + (start + pageRows.length) + " of " + total;
+        renderPager(pages);
+    }
+
+    function renderPager(pages) {
+        const el = $("pager");
+        let html = '<button class="page-btn" type="button" data-page="' + (page - 1) + '"' + (page === 1 ? " disabled" : "") + ' aria-label="Previous page">‹</button>';
+
+        const nums = [];
+        for (let i = 1; i <= pages; i++) {
+            if (i === 1 || i === pages || Math.abs(i - page) <= 1) nums.push(i);
+            else if (nums[nums.length - 1] !== "…") nums.push("…");
+        }
+        nums.forEach(function (n) {
+            if (n === "…") html += '<span class="muted" style="padding:0 4px">…</span>';
+            else html += '<button class="page-btn' + (n === page ? " current" : "") + '" type="button" data-page="' + n + '"' +
+                (n === page ? ' aria-current="page"' : "") + ">" + n + "</button>";
+        });
+
+        html += '<button class="page-btn" type="button" data-page="' + (page + 1) + '"' + (page === pages ? " disabled" : "") + ' aria-label="Next page">›</button>';
+        el.innerHTML = html;
+    }
+
+    // =========================================================
+    // Events: table, pager, toolbar
+    // =========================================================
+    list.addEventListener("click", function (e) {
+        const edit = e.target.closest("[data-edit]");
+        const del = e.target.closest("[data-delete]");
+
+        if (edit) {
+            const s = students.find(function (x) { return x.id === edit.dataset.edit; });
+            if (s) openForm(s);
+        } else if (del) {
+            const s = students.find(function (x) { return x.id === del.dataset.delete; });
+            if (!s) return;
+            confirmDialog("Delete " + s.name + "? You can undo this right after.").then(function (ok) {
+                if (ok) removeStudents([s.id]);
+            });
+        }
+    });
+
+    list.addEventListener("change", function (e) {
+        const box = e.target.closest("[data-select]");
+        if (!box) return;
+        if (box.checked) selected.add(box.dataset.select); else selected.delete(box.dataset.select);
+        render();
+    });
+
+    $("selectAll").addEventListener("change", function () {
+        const rows = getFiltered().slice((page - 1) * pageSize, page * pageSize);
+        rows.forEach(function (s) {
+            if ($("selectAll").checked) selected.add(s.id); else selected.delete(s.id);
+        });
+        render();
+    });
+
+    $("bulkClearBtn").addEventListener("click", function () { selected.clear(); render(); });
+    $("bulkDeleteBtn").addEventListener("click", function () {
+        const ids = Array.from(selected);
+        if (!ids.length) return;
+        confirmDialog("Delete " + ids.length + " selected student(s)? You can undo this right after.").then(function (ok) {
+            if (ok) removeStudents(ids);
+        });
+    });
+
+    $("pager").addEventListener("click", function (e) {
+        const b = e.target.closest("[data-page]");
+        if (!b || b.disabled) return;
+        page = Number(b.dataset.page);
+        render();
+    });
+
+    $("pageSize").addEventListener("change", function () {
+        pageSize = Number($("pageSize").value);
+        page = 1;
+        render();
+    });
+
+    let searchTimer;
+    $("search").addEventListener("input", function () {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () { page = 1; render(); }, 150);
+    });
+    $("courseFilter").addEventListener("change", function () { page = 1; render(); });
+    $("statusFilter").addEventListener("change", function () { page = 1; render(); });
+
+    function toggleSort(th) {
+        const key = th.dataset.key;
+        if (sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+        render();
+    }
+    document.querySelectorAll("th.sortable").forEach(function (th) {
+        th.addEventListener("click", function () { toggleSort(th); });
+        th.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSort(th); }
+        });
+    });
+
+    // =========================================================
+    // CSV export / import / print
+    // =========================================================
+    function csvCell(value) {
+        let t = String(value == null ? "" : value);
+        if (/^[=+\-@]/.test(t)) t = "'" + t;           // block spreadsheet formula injection
+        return '"' + t.replace(/"/g, '""') + '"';
+    }
+
+    function copyText(text) {
+        function fallback() {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+            document.body.appendChild(ta);
+            ta.select();
+            let ok = false;
+            try { ok = document.execCommand("copy"); } catch (e) {}
+            ta.remove();
+            return ok;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return fallback(); });
+        }
+        return Promise.resolve(fallback());
+    }
+
+    // Hosted pages cannot start file downloads, so the table is copied as CSV text instead
+    $("exportBtn").addEventListener("click", function () {
+        const rows = getFiltered();
+        if (!rows.length) { toast("No records to copy.", "error"); return; }
+
+        const header = ["Name", "Email", "Phone", "Course", "Status", "Enrolled"];
+        const lines = [header.map(csvCell).join(",")].concat(rows.map(function (s) {
+            return [s.name, s.email, s.phone, s.course, s.status, s.enrolled].map(csvCell).join(",");
+        }));
+
+        copyText(lines.join("\r\n")).then(function (ok) {
+            if (ok) toast("Copied " + rows.length + " record(s) as CSV. Paste into Excel or Sheets.", "success");
+            else toast("Copy was blocked by this browser.", "error");
+        });
+    });
+
+    function parseCSV(text) {
+        const rows = [];
+        let row = [], cell = "", inQuotes = false;
+        text = text.replace(/^\uFEFF/, "");
+
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            if (inQuotes) {
+                if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+                else if (c === '"') inQuotes = false;
+                else cell += c;
+            } else if (c === '"') inQuotes = true;
+            else if (c === ",") { row.push(cell); cell = ""; }
+            else if (c === "\n" || c === "\r") {
+                if (c === "\r" && text[i + 1] === "\n") i++;
+                row.push(cell); cell = "";
+                if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row);
+                row = [];
+            } else cell += c;
+        }
+        row.push(cell);
+        if (row.some(function (x) { return x.trim() !== ""; })) rows.push(row);
+        return rows;
+    }
+
+    $("importBtn").addEventListener("click", function () { $("importFile").click(); });
+
+    $("importFile").addEventListener("change", function () {
+        const file = $("importFile").files[0];
+        $("importFile").value = "";
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onerror = function () { toast("Could not read that file.", "error"); };
+        reader.onload = function () {
+            const rows = parseCSV(String(reader.result));
+            if (rows.length < 2) { toast("The CSV has no data rows.", "error"); return; }
+
+            const head = rows[0].map(function (h) { return h.trim().toLowerCase(); });
+            const col = function (n) { return head.indexOf(n); };
+            if (col("name") < 0 || col("email") < 0 || col("course") < 0) {
+                toast("CSV needs Name, Email and Course columns.", "error");
+                return;
+            }
+
+            let added = 0, skipped = 0;
+            rows.slice(1).forEach(function (r) {
+                const get = function (n) { return col(n) > -1 ? (r[col(n)] || "").trim().replace(/^'(?=[=+\-@])/, "") : ""; };
+                const name = get("name"), email = get("email"), course = get("course");
+                const valid = name.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && course;
+
+                if (!valid || emailTaken(email, null)) { skipped++; return; }
+
+                const status = ["Active", "Inactive", "Graduated"].find(function (s) { return s.toLowerCase() === get("status").toLowerCase(); });
+                const enrolled = /^\d{4}-\d{2}-\d{2}$/.test(get("enrolled")) ? get("enrolled") : today();
+
+                students.push(normalise({
+                    id: uid(), name: name, email: email, phone: get("phone"), course: course,
+                    status: status || "Active", enrolled: enrolled, createdAt: Date.now()
+                }));
+                added++;
+            });
+
+            save();
+            page = 1;
+            render();
+            toast("Imported " + added + " student(s)" + (skipped ? ", skipped " + skipped + " invalid or duplicate." : "."),
+                added ? "success" : "error");
+        };
+        reader.readAsText(file);
+    });
+
+    // =========================================================
+    // Init
+    // =========================================================
+    // Make unexpected failures visible instead of silent
+    window.addEventListener("error", function (e) {
+        toast("Something went wrong: " + (e.message || "unknown error"), "error");
+    });
+
+    (function checkStorage() {
+        try {
+            localStorage.setItem("__sms_test__", "1");
+            localStorage.removeItem("__sms_test__");
+        } catch (e) {
+            $("storageWarning").hidden = false;
+            storageWarned = true;   // the banner already explains it; skip the per-save toast
+        }
+    })();
+
+    save();     // persist any migrated records
+    render();
+})();
+</script>
+
+</body></html>
